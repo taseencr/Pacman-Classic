@@ -52,6 +52,10 @@ public class PacMan extends JPanel implements ActionListener, KeyListener{
         }
 
         void tryTurn(char direction){
+            if(!isGameStarted){
+                isGameStarted = true;
+                gameLoop.start();
+            }
             char prevDirection = this.direction;
             this.direction = direction;
             updateVelocity();
@@ -84,6 +88,8 @@ public class PacMan extends JPanel implements ActionListener, KeyListener{
     boolean isGameStarted = false;
     boolean isGameOver = false;
     boolean isPaused = false;
+    String playerName = "";
+    boolean nameSubmitted = false;
     GameWindow gameWindow;
 
     Image wallImage;
@@ -250,6 +256,10 @@ public class PacMan extends JPanel implements ActionListener, KeyListener{
         if(isPaused && !isGameOver){
             drawPauseMenu(g);
         }
+        
+        if(isGameOver){
+            drawGameOverMenu(g);
+        }
     }
     
     private void drawPauseMenu(Graphics g){
@@ -308,6 +318,101 @@ public class PacMan extends JPanel implements ActionListener, KeyListener{
         }
     }
 
+    private void drawGameOverMenu(Graphics g){
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.7f));
+        g2d.setColor(Color.BLACK);
+        g2d.fillRect(0, 0, boardWidth, boardHeight);
+        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f));
+        
+        int menuWidth = 400;
+        int menuHeight = 450;
+        int menuX = (boardWidth - menuWidth) / 2;
+        int menuY = (boardHeight - menuHeight) / 2;
+        
+        g2d.setColor(new Color(20, 20, 20));
+        g2d.fillRoundRect(menuX, menuY, menuWidth, menuHeight, 20, 20);
+        g2d.setColor(new Color(255, 0, 0));
+        g2d.setStroke(new BasicStroke(3));
+        g2d.drawRoundRect(menuX, menuY, menuWidth, menuHeight, 20, 20);
+        
+        g2d.setFont(new Font("Verdana", Font.BOLD, 42));
+        FontMetrics fm = g2d.getFontMetrics();
+        String title = "GAME OVER";
+        int titleX = menuX + (menuWidth - fm.stringWidth(title)) / 2;
+        int titleY = menuY + 60;
+        g2d.setColor(new Color(255, 0, 0));
+        g2d.drawString(title, titleX, titleY);
+        
+        int infoY = titleY + 50;
+        g2d.setFont(new Font("Verdana", Font.BOLD, 20));
+        g2d.setColor(new Color(200, 200, 200));
+        String scoreText = "Score: " + score;
+        fm = g2d.getFontMetrics();
+        int scoreX = menuX + (menuWidth - fm.stringWidth(scoreText)) / 2;
+        g2d.drawString(scoreText, scoreX, infoY);
+        
+        int nameY = infoY + 50;
+        g2d.setFont(new Font("Verdana", Font.PLAIN, 16));
+        g2d.setColor(Color.WHITE);
+        String nameLabel = "Enter your name:";
+        fm = g2d.getFontMetrics();
+        int nameLabelX = menuX + (menuWidth - fm.stringWidth(nameLabel)) / 2;
+        g2d.drawString(nameLabel, nameLabelX, nameY);
+        
+        int inputY = nameY + 30;
+        int inputWidth = 280;
+        int inputHeight = 35;
+        int inputX = menuX + (menuWidth - inputWidth) / 2;
+        
+        g2d.setColor(new Color(40, 40, 40));
+        g2d.fillRoundRect(inputX, inputY, inputWidth, inputHeight, 5, 5);
+        g2d.setColor(new Color(150, 150, 150));
+        g2d.setStroke(new BasicStroke(2));
+        g2d.drawRoundRect(inputX, inputY, inputWidth, inputHeight, 5, 5);
+        
+        g2d.setFont(new Font("Verdana", Font.PLAIN, 18));
+        g2d.setColor(Color.WHITE);
+        String displayName = playerName.isEmpty() ? "Type here..." : playerName;
+        if(playerName.isEmpty()){
+            g2d.setColor(new Color(100, 100, 100));
+        }
+        fm = g2d.getFontMetrics();
+        int textX = inputX + (inputWidth - fm.stringWidth(displayName)) / 2;
+        int textY = inputY + (inputHeight + fm.getAscent()) / 2 - 2;
+        g2d.drawString(displayName, textX, textY);
+        
+        if(!nameSubmitted){
+            int cursorX = textX + (playerName.isEmpty() ? 0 : fm.stringWidth(playerName));
+            g2d.setColor(Color.WHITE);
+            g2d.fillRect(cursorX, textY - fm.getAscent() + 2, 2, fm.getAscent() - 4);
+        }
+        
+        int optionsY = inputY + inputHeight + 40;
+        g2d.setFont(new Font("Verdana", Font.PLAIN, 16));
+        g2d.setColor(Color.WHITE);
+        
+        String[] options;
+        if(!nameSubmitted){
+            options = new String[]{
+                "ENTER - Submit Name"
+            };
+        }
+        else{
+            options = new String[]{
+                "ENTER / SPACE - Restart",
+                "R - Restart Game",
+                "M - Main Menu"
+            };
+        }
+        
+        for(int i = 0; i < options.length; i++){
+            fm = g2d.getFontMetrics();
+            int optionX = menuX + (menuWidth - fm.stringWidth(options[i])) / 2;
+            g2d.drawString(options[i], optionX, optionsY + (i * 35));
+        }
+    }
+
 
     void setDirection(Block b, char direction){
         b.direction = direction;
@@ -334,6 +439,8 @@ public class PacMan extends JPanel implements ActionListener, KeyListener{
                 lives--;
                 if(lives == 0){
                     isGameOver = true;
+                    playerName = "";
+                    nameSubmitted = false;
                     return;
                 }
                 resetPosition();
@@ -481,53 +588,66 @@ public class PacMan extends JPanel implements ActionListener, KeyListener{
         repaint();
         if(isGameOver){
             gameLoop.stop();
-            String name = JOptionPane.showInputDialog(this, "Game Over! Enter your name: ");
-            if(name!=null && !name.trim().isEmpty()){
-                try{
-                    leaderboard.addScore(name, score);
-                }catch (Exception e1) {
-                    e1.printStackTrace();
-                }
-            }
         }
     }
 
 
     public void keyTyped(KeyEvent e){
-
+        if(isGameOver && !nameSubmitted){
+            char c = e.getKeyChar();
+            if(c == '\b'){
+                if(playerName.length() > 0){
+                    playerName = playerName.substring(0, playerName.length() - 1);
+                    repaint();
+                }
+            } else if(c == '\n' || c == '\r'){
+                submitName();
+            } else if(Character.isLetterOrDigit(c) || c == ' ' || c == '-' || c == '_'){
+                if(playerName.length() < 20){
+                    playerName += c;
+                    repaint();
+                }
+            }
+        }
     }
     public void keyReleased(KeyEvent e){
 
     }
     public void keyPressed(KeyEvent e){
-        // Pause/Unpause toggle (ESC or P)
         if(e.getKeyCode() == KeyEvent.VK_ESCAPE || e.getKeyCode() == KeyEvent.VK_P){
             if(isGameStarted && !isGameOver){
                 togglePause();
             }
             return;
         }
-        
-        if(e.getKeyCode() == KeyEvent.VK_ENTER || e.getKeyCode() == KeyEvent.VK_SPACE){
-            if(!isGameStarted){
-                isGameStarted = true;
-                gameLoop.start();
-            }
-        }
 
         if(isGameOver){
-            if(e.getKeyCode() == KeyEvent.VK_ENTER || e.getKeyCode() == KeyEvent.VK_SPACE){
-                loadMap();
-                resetPosition();
-                lives = 3;
-                score = 0;
-                isGameOver = false;
-                isPaused = false;
-                gameLoop.start();
+            if(!nameSubmitted){
+                if(e.getKeyCode() == KeyEvent.VK_ENTER){
+                    submitName();
+                }
+                else if(e.getKeyCode() == KeyEvent.VK_ESCAPE){
+                    nameSubmitted = true;
+                    repaint();
+                }
+                else if(e.getKeyCode() == KeyEvent.VK_BACK_SPACE){
+                    if(playerName.length() > 0){
+                        playerName = playerName.substring(0, playerName.length() - 1);
+                        repaint();
+                    }
+                }
+            }
+            else{
+                if(e.getKeyCode() == KeyEvent.VK_ENTER || e.getKeyCode() == KeyEvent.VK_SPACE || e.getKeyCode() == KeyEvent.VK_R){
+                    restartGame();
+                }
+                else if(e.getKeyCode() == KeyEvent.VK_M && gameWindow != null){
+                    returnToMainMenu();
+                }
             }
         }
 
-        if(isGameStarted && !isPaused && !isGameOver){
+        if(!isPaused && !isGameOver){
             if(e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_W){
                 pacman.tryTurn('U');
             }
@@ -569,10 +689,25 @@ public class PacMan extends JPanel implements ActionListener, KeyListener{
         isPaused = !isPaused;
         if(isPaused){
             gameLoop.stop();
-        } else {
+        }
+        else{
             gameLoop.start();
         }
         repaint();
+    }
+    
+    private void submitName(){
+        if(!nameSubmitted){
+            nameSubmitted = true;
+            if(playerName != null && !playerName.trim().isEmpty()){
+                try{
+                    leaderboard.addScore(playerName.trim(), score);
+                }catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            repaint();
+        }
     }
     
     private void restartGame(){
@@ -583,6 +718,8 @@ public class PacMan extends JPanel implements ActionListener, KeyListener{
         isGameOver = false;
         isPaused = false;
         isGameStarted = false;
+        playerName = "";
+        nameSubmitted = false;
         gameLoop.stop();
         repaint();
     }

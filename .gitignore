@@ -1,5 +1,5 @@
 /bin/
 /jre/
 /.vscode/
-*.exe
+/exe
 *.class
