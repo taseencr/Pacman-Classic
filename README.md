@@ -15,7 +15,6 @@ This project recreates the original Pac-Man experience with smooth controls, a c
 - 🏆 Persistent leaderboard (saved locally)
 - 🎮 Keyboard support (Arrow Keys + WASD)
 - 🖥️ Multiple screens (Home, Game, Leaderboard, Credits)
-- 🔗 Clickable links in the Credits screen
 - 📦 Windows executable release included
 
 ---
@@ -24,7 +23,6 @@ This project recreates the original Pac-Man experience with smooth controls, a c
 
 | Action | Key |
 |------|-----|
-| Start Game | `ENTER` / `SPACE` |
 | Move | Arrow Keys / `W A S D` |
 | Pause / Resume | `ESC` / `P` |
 | Restart (Paused) | `R` |
@@ -35,7 +33,7 @@ This project recreates the original Pac-Man experience with smooth controls, a c
 ## 📦 Download & Run (Windows)
 
 1. Go to the **Releases** section
-2. Download **Pacman v1.0 (Windows)**
+2. Download **Pacman (Windows)**
 3. Extract the archive
 4. Run `Pacman.exe`
 
@@ -59,7 +57,6 @@ This project recreates the original Pac-Man experience with smooth controls, a c
 Pacman/
 ├── src/
 │   └── Java source files
-├── lib/
 ├── manifest.txt
 ├── README.md
 ├── .gitignore
