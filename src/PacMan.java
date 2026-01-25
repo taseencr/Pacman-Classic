@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Random;
 import javax.swing.*;
@@ -102,11 +103,18 @@ public class PacMan extends JPanel implements ActionListener, KeyListener{
     Image pacmanDownImage;
     Image pacmanRightImage;
     Image pacmanLeftImage;
-    
+    Image cherryImage;
+
     HashSet<Block> walls;
     HashSet<Block> foods;
     HashSet<Block> ghosts;
     Block pacman;
+    Block cherry;
+    
+    ArrayList<int[]> foodTilePositions;
+    int cherryLifetimeTicks = 200;
+    int cherryTicksLeft = 0;
+    int ticksUntilNextCherrySpawn = 400;
     Leaderboard leaderboard;
 
     Timer gameLoop;
@@ -172,7 +180,8 @@ public class PacMan extends JPanel implements ActionListener, KeyListener{
         pacmanDownImage = new ImageIcon(getClass().getResource("/Images/pacmanDown.png")).getImage();
         pacmanRightImage = new ImageIcon(getClass().getResource("/Images/pacmanRight.png")).getImage();
         pacmanLeftImage = new ImageIcon(getClass().getResource("/Images/pacmanLeft.png")).getImage();
-    
+        cherryImage = new ImageIcon(getClass().getResource("/Images/cherry.png")).getImage();
+
         loadMap();
         for(Block ghost : ghosts){
             setDirection(ghost, directions[random.nextInt(4)]);
@@ -185,6 +194,9 @@ public class PacMan extends JPanel implements ActionListener, KeyListener{
         walls = new HashSet<Block>();
         foods = new HashSet<Block>();
         ghosts = new HashSet<Block>();
+        cherry = null;
+        ticksUntilNextCherrySpawn = 400;
+        foodTilePositions = new ArrayList<int[]>();
 
         for(int r=0; r<rowCount; r++){
             String row = tileMap[r];
@@ -218,6 +230,7 @@ public class PacMan extends JPanel implements ActionListener, KeyListener{
                     ghosts.add(ghost);
                 }
                 else if(tileMapChar==' '){
+                    foodTilePositions.add(new int[]{c, r});
                     Block food = new Block('f', x+14, y+14, 4, 4, null);
                     foods.add(food);
                 }
@@ -245,12 +258,18 @@ public class PacMan extends JPanel implements ActionListener, KeyListener{
             g.fillRect(food.x, food.y, food.width, food.height);
         }
 
-        g.setFont(new Font("Verdana", Font.PLAIN, 18));
+        if(cherry != null){
+            g.drawImage(cherry.image, cherry.x, cherry.y, cherry.width, cherry.height, null);
+        }
+
+        g.setFont(new Font("Verdana", Font.PLAIN, 19));
         if(isGameOver){
-            g.drawString("Game Over! Score: " + String.valueOf(score), tileSize/2, tileSize/2);
+            g.setColor(Color.RED);
+            g.drawString("Game Over! Score: " + String.valueOf(score), tileSize/2, (tileSize/2)+(tileSize/5));
         }
         else{
-            g.drawString("x" + String.valueOf(lives) + " Score: " + String.valueOf(score), tileSize/2, tileSize/2);
+            g.setColor(Color.YELLOW);
+            g.drawString("x" + String.valueOf(lives) + " Score: " + String.valueOf(score), tileSize/2, (tileSize/2)+(tileSize/5));
         }
         
         if(isPaused && !isGameOver){
@@ -478,10 +497,53 @@ public class PacMan extends JPanel implements ActionListener, KeyListener{
         }
         foods.remove(foodEaten);
 
+        if(cherry != null){
+            if(collision(pacman, cherry)){
+                score += 100;
+                cherry = null;
+                ticksUntilNextCherrySpawn = 300 + random.nextInt(300);
+            }
+            else{
+                cherryTicksLeft--;
+                if(cherryTicksLeft <= 0){
+                    cherry = null;
+                    ticksUntilNextCherrySpawn = 300 + random.nextInt(300);
+                }
+            }
+        }
+        else{
+            ticksUntilNextCherrySpawn--;
+            if(ticksUntilNextCherrySpawn <= 0){
+                trySpawnCherry();
+                ticksUntilNextCherrySpawn = 300 + random.nextInt(300);
+            }
+        }
+
         if(foods.isEmpty()){
             loadMap();
             resetPosition();
         }
+    }
+
+    private void trySpawnCherry(){
+        HashSet<String> occupied = new HashSet<String>();
+        for(Block food : foods){
+            int tc = (food.x - 14) / tileSize;
+            int tr = (food.y - 14) / tileSize;
+            occupied.add(tc + "," + tr);
+        }
+        ArrayList<int[]> eaten = new ArrayList<int[]>();
+        for(int[] pos : foodTilePositions){
+            if(!occupied.contains(pos[0] + "," + pos[1])){
+                eaten.add(pos);
+            }
+        }
+        if(eaten.isEmpty()) return;
+        int[] pos = eaten.get(random.nextInt(eaten.size()));
+        int x = pos[0] * tileSize;
+        int y = pos[1] * tileSize;
+        cherry = new Block('c', x, y, tileSize, tileSize, cherryImage);
+        cherryTicksLeft = cherryLifetimeTicks;
     }
 
     void updateGhostImage(Block ghost){
