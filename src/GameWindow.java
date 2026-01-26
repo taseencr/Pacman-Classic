@@ -10,7 +10,7 @@ public class GameWindow extends JFrame{
     public GameWindow() throws Exception{
         leaderboard = new Leaderboard();
 
-        setTitle("Pac Man");
+        setTitle("Pac-Man");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
         cardLayout = new CardLayout();

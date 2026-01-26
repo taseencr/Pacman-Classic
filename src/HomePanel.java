@@ -18,13 +18,16 @@ public class HomePanel extends JPanel{
         title.setFont(new Font("Verdana", Font.BOLD, 64));
         title.setForeground(new Color(255, 255, 0));
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
-        title.setBorder(new EmptyBorder(0, 0, 60, 0));
 
         JLabel subtitle = new JLabel("Classic Arcade Game");
         subtitle.setFont(new Font("Verdana", Font.ITALIC, 18));
         subtitle.setForeground(new Color(200, 200, 200));
         subtitle.setAlignmentX(Component.CENTER_ALIGNMENT);
-        subtitle.setBorder(new EmptyBorder(0, 0, 80, 0));
+        
+        JLabel versionLabel = new JLabel("v2.0");
+        subtitle.setFont(new Font("Verdana", Font.ITALIC, 17));
+        subtitle.setForeground(new Color(200, 200, 200));
+        subtitle.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
@@ -47,7 +50,11 @@ public class HomePanel extends JPanel{
         buttonPanel.add(creditsBtn);
 
         mainContainer.add(title);
+        mainContainer.add(Box.createRigidArea(new Dimension(0, 55)));
         mainContainer.add(subtitle);
+        mainContainer.add(Box.createRigidArea(new Dimension(0, 5)));
+        mainContainer.add(versionLabel);
+        mainContainer.add(Box.createRigidArea(new Dimension(0, 61)));
         mainContainer.add(buttonPanel);
         mainContainer.add(Box.createVerticalGlue());
 

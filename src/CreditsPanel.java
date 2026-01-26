@@ -16,9 +16,9 @@ public class CreditsPanel extends JPanel{
         credits.setBackground(Color.BLACK);
         credits.setForeground(Color.YELLOW);
         
-        String htmlContent = "<html><body style='font-family: Verdana; font-size: 20px; color: #FFFF00; background-color: #000000; padding: 40px;'>" +
+        String htmlContent = "<html><body style='font-family: Verdana; font-size: 20px; color: #ffffff; background-color: #000000; padding: 40px;'>" +
                 "<div style='text-align: center;'>" +
-                "<h1 style='color: #FFFF00;'>PAC-MAN</h1><br>" +
+                "<h1 style='color: #FFFF00;'>PAC-MAN: Classic Arcade Game</h1><hr><br>" +
                 "<p>Developed By:</p>" +
                 "<p>ABRAR ABIR TASEEN</p><p>(Taseen CR)</p>" +
                 "<p><a href='https://taseencr.vercel.app' style='color: #00C8FF; text-decoration: none;'>https://taseencr.vercel.app</a></p>" +

@@ -129,29 +129,84 @@ public class PacMan extends JPanel implements ActionListener, KeyListener{
     char[] directions = {'U', 'D', 'R', 'L'};
     Random random = new Random();
 
-    private String[] tileMap = {
-        "XXXXXXXXXXXXXXXXXXX",
-        "X        X        X",
-        "X XX XXX X XXX XX X",
-        "X                 X",
-        "X XX X XXXXX X XX X",
-        "X    X       X    X",
-        "X XX XXXX XXXX XX X",
-        "X  X X       X X  X",
-        "XXXX X XXrXX X XXXX",
-        "O       bpo       O",
-        "XXXX X XXXXX X XXXX",
-        "X  X X       X X  X",
-        "X XX X XXXXX X XX X",
-        "X        X        X",
-        "X XX XXX X XXX XX X",
-        "X  X     P     X  X",
-        "XX X X XXXXX X X XX",
-        "X    X   X   X    X",
-        "X XXXXXX X XXXXXX X",
-        "X                 X",
-        "XXXXXXXXXXXXXXXXXXX" 
+    private static final int easyMap = 0, mediumMap = 1, hardMap = 2;
+    private int currentLevelIndex = easyMap;
+
+    private static final String[][] mapLevel = {
+        { // Easy
+            "XXXXXXXXXXXXXXXXXXX",
+            "X        X        X",
+            "X XXXX X X X XXXX X",
+            "O                 O",
+            "X XX X X X X X XX X",
+            "X    X       X    X",
+            "X XX X XX XX X XX X",
+            "X                 X",
+            "X XXXX XXrXX XXXX X",
+            "O       bpo       O",
+            "X XX X XX XX X XX X",
+            "X    X       X    X",
+            "X XX X XXXXX X XX X",
+            "X        X        X",
+            "X XX XXX X XXX XX X",
+            "X  X     P     X  X",
+            "XX X X XXXXX X X XX",
+            "X    X   X   X    X",
+            "X XXXXXX X XXXXXX X",
+            "O                 O",
+            "XXXXXXXXXXXXXXXXXXX"
+        },
+
+        { // Medium
+            "XXXXXXXXXXXXXXXXXXX",
+            "X        X        X",
+            "X XX X X X X X XX X",
+            "X                 X",
+            "X XX X X X X X XX X",
+            "X        r        X",
+            "X XX X XX XX X XX X",
+            "X  X X       X X  X",
+            "XXXX X XX XX X XXXX",
+            "O       bpo       O",
+            "XXXX X XXXXX X XXXX",
+            "X  X X       X X  X",
+            "X XX X XXXXX X XX X",
+            "X        X        X",
+            "X XX XXX X XXX XX X",
+            "X  X     P     X  X",
+            "XX X X XXXXX X X XX",
+            "X    X   X   X    X",
+            "X XXXXXX X XXXXXX X",
+            "X                 X",
+            "XXXXXXXXXXXXXXXXXXX"
+        },
+
+        { // Hard
+            "XXXXXXXXXXXXXXXXXXX",
+            "X        X        X",
+            "X XX XXX X XXX XX X",
+            "X                 X",
+            "X XX X XXXXX X XX X",
+            "X    X       X    X",
+            "X XX XXXX XXXX XX X",
+            "X  X X       X X  X",
+            "XXXX X XXrXX X XXXX",
+            "O       bpo       O",
+            "XXXX X XXXXX X XXXX",
+            "X  X X       X X  X",
+            "X XX X XXXXX X XX X",
+            "X        X        X",
+            "X XX XXX X XXX XX X",
+            "X  X     P     X  X",
+            "XX X X XXXXX X X XX",
+            "X    X   X   X    X",
+            "X XXXXXX X XXXXXX X",
+            "X                 X",
+            "XXXXXXXXXXXXXXXXXXX" 
+        }
     };
+
+    private String[] tileMap;
 
     public PacMan() throws Exception{
         this(null);
@@ -201,6 +256,7 @@ public class PacMan extends JPanel implements ActionListener, KeyListener{
     }
 
     public void loadMap(){
+        tileMap = mapLevel[currentLevelIndex];
         walls = new HashSet<Block>();
         foods = new HashSet<Block>();
         ghosts = new HashSet<Block>();
@@ -453,13 +509,14 @@ public class PacMan extends JPanel implements ActionListener, KeyListener{
         String[] options;
         if(!nameSubmitted){
             options = new String[]{
+                "",
                 "ENTER - Submit Name"
             };
         }
         else{
             options = new String[]{
-                "ENTER / SPACE - Restart",
-                "R - Restart Game",
+                "",
+                "ENTER / R - Restart",
                 "M - Main Menu"
             };
         }
@@ -577,6 +634,12 @@ public class PacMan extends JPanel implements ActionListener, KeyListener{
         }
 
         if(foods.isEmpty()){
+            if(currentLevelIndex == easyMap){
+                currentLevelIndex = mediumMap;
+            }
+            else if(currentLevelIndex == mediumMap){
+                currentLevelIndex = hardMap;
+            }
             loadMap();
             resetPosition();
         }
@@ -836,6 +899,7 @@ public class PacMan extends JPanel implements ActionListener, KeyListener{
     }
     
     private void restartGame(){
+        currentLevelIndex = easyMap;
         loadMap();
         resetPosition();
         lives = 3;
