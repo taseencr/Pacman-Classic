@@ -3,18 +3,18 @@
 A classic **Pac-Man inspired arcade game** built using **Java (Swing & AWT)**.  
 This project recreates the original Pac-Man experience with smooth controls, a clean UI, pause functionality, and a persistent leaderboard system.
 
-> 🎮 This is my first complete game project, built and released independently.
-
 ---
 
 ## ✨ Features
 
 - 🟡 Classic Pac-Man style maze and movement
+- 🗺️ Multiple playable maps with varied layouts
 - 👻 Multiple ghosts with randomized AI behavior
+- 🍒 Cherry bonus food for extra points
+- ⚡ Power food that temporarily scares ghosts and allows them to be eaten
 - ⏸️ Pause menu with Resume, Restart, and Main Menu options
 - 🏆 Persistent leaderboard (saved locally)
 - 🎮 Keyboard support (Arrow Keys + WASD)
-- 🖥️ Multiple screens (Home, Game, Leaderboard, Credits)
 - 📦 Windows executable release included
 
 ---
