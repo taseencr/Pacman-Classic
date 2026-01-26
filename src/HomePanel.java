@@ -24,7 +24,7 @@ public class HomePanel extends JPanel{
         subtitle.setForeground(new Color(200, 200, 200));
         subtitle.setAlignmentX(Component.CENTER_ALIGNMENT);
         
-        JLabel versionLabel = new JLabel("v2.0");
+        JLabel versionLabel = new JLabel("v2.1");
         subtitle.setFont(new Font("Verdana", Font.ITALIC, 17));
         subtitle.setForeground(new Color(200, 200, 200));
         subtitle.setAlignmentX(Component.CENTER_ALIGNMENT);

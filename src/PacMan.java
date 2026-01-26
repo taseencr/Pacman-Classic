@@ -129,6 +129,8 @@ public class PacMan extends JPanel implements ActionListener, KeyListener{
     char[] directions = {'U', 'D', 'R', 'L'};
     Random random = new Random();
 
+    char pendingDirection = 0;
+
     private static final int easyMap = 0, mediumMap = 1, hardMap = 2;
     private int currentLevelIndex = easyMap;
 
@@ -535,7 +537,55 @@ public class PacMan extends JPanel implements ActionListener, KeyListener{
         updateGhostImage(b);
     }
 
+    private void tryPendingTurn(){
+        if(pendingDirection == 0 || pendingDirection == pacman.direction){
+            if(pendingDirection != 0) pendingDirection = 0;
+            return;
+        }
+        final int turnThreshold = pacman.speed * 2;
+        int snapX = pacman.x, snapY = pacman.y;
+        if(pacman.velX != 0){
+            int centerY = (int)((pacman.y + pacman.height / 2.0) / tileSize) * tileSize + tileSize / 2;
+            int targetY = centerY - pacman.height / 2;
+            if(Math.abs((pacman.y + pacman.height / 2) - centerY) > turnThreshold) return;
+            snapY = targetY;
+        }
+        else{
+            int centerX = (int)((pacman.x + pacman.width / 2.0) / tileSize) * tileSize + tileSize / 2;
+            int targetX = centerX - pacman.width / 2;
+            if(Math.abs((pacman.x + pacman.width / 2) - centerX) > turnThreshold) return;
+            snapX = targetX;
+        }
+        int savedX = pacman.x, savedY = pacman.y;
+        char prevDir = pacman.direction;
+        pacman.direction = pendingDirection;
+        pacman.updateVelocity();
+        pacman.x = snapX;
+        pacman.y = snapY;
+        pacman.x += pacman.velX;
+        pacman.y += pacman.velY;
+        boolean hitWall = false;
+        for(Block wall : walls){
+            if(collision(pacman, wall)) { hitWall = true; break; }
+        }
+        pacman.x = savedX;
+        pacman.y = savedY;
+        pacman.direction = prevDir;
+        pacman.updateVelocity();
+        if(hitWall) return;
+        pacman.x = snapX;
+        pacman.y = snapY;
+        pacman.direction = pendingDirection;
+        pacman.updateVelocity();
+        pendingDirection = 0;
+        if(pacman.direction == 'U') pacman.image = pacmanUpImage;
+        else if(pacman.direction == 'D') pacman.image = pacmanDownImage;
+        else if(pacman.direction == 'R') pacman.image = pacmanRightImage;
+        else pacman.image = pacmanLeftImage;
+    }
+
     public void move(){
+        tryPendingTurn();
         pacman.x += pacman.velX;
         pacman.y += pacman.velY;
         wrapper(pacman);
@@ -705,6 +755,7 @@ public class PacMan extends JPanel implements ActionListener, KeyListener{
     }
 
     public void resetPosition(){
+        pendingDirection = 0;
         pacman.reset();
         pacman.velX = 0;
         pacman.velY = 0;
@@ -837,15 +888,19 @@ public class PacMan extends JPanel implements ActionListener, KeyListener{
 
         if(!isPaused && !isGameOver){
             if(e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_W){
+                pendingDirection = 'U';
                 pacman.tryTurn('U');
             }
             else if(e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_S){
+                pendingDirection = 'D';
                 pacman.tryTurn('D');
             }
             else if(e.getKeyCode() == KeyEvent.VK_RIGHT || e.getKeyCode() == KeyEvent.VK_D){
+                pendingDirection = 'R';
                 pacman.tryTurn('R');
             }
             else if(e.getKeyCode() == KeyEvent.VK_LEFT || e.getKeyCode() == KeyEvent.VK_A){
+                pendingDirection = 'L';
                 pacman.tryTurn('L');
             }
             
