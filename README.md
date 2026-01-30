@@ -19,6 +19,18 @@ This project recreates the original Pac-Man experience with smooth controls, a c
 
 ---
 
+## 📸 Screenshots
+
+<div style="display: flex; overflow-x: auto; gap: 12px; padding-bottom: 8px;">
+  <img src="screenshots/gameplay.png" height="220"/>
+  <img src="screenshots/pause_menu_screen.png" height="220"/>
+  <img src="screenshots/game_over_screen.png" height="220"/>
+  <img src="screenshots/gameplay2.png" height="220"/>
+  <img src="screenshots/power_mode.png" height="220"/>
+</div>
+
+---
+
 ## 🕹️ Controls
 
 | Action | Key |
@@ -55,6 +67,7 @@ This project recreates the original Pac-Man experience with smooth controls, a c
 
 ```text
 Pacman/
+├── screenshots
 ├── src/
 │   └── Java source files
 ├── manifest.txt
